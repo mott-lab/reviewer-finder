@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reviewer Finder</title>
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header>
+    <h1>Reviewer Finder</h1>
+    <span id="dataStatus">Loading proceedings…</span>
+    <button id="themeToggle" type="button" class="theme-toggle" title="Toggle theme">Light</button>
+
+    <div class="config feature-disabled">
+      <label>Ollama URL <input id="ollamaUrl" type="text" value="http://localhost:11434"></label>
+      <label>Model <input id="ollamaModel" type="text" placeholder="e.g. llama3"></label>
+      <button id="testConnection" type="button">Test connection</button>
+      <span id="connectionStatus"></span>
+    </div>
+    <details class="help feature-disabled">
+      <summary>Ollama setup help</summary>
+      <p>Ollama must allow cross-origin requests from this page. Restart it with the <code>OLLAMA_ORIGINS</code> env var set, e.g.</p>
+      <pre>OLLAMA_ORIGINS="*" ollama serve</pre>
+      <p>On Windows, set <code>OLLAMA_ORIGINS=*</code> in System Environment Variables, then restart the Ollama service.</p>
+      <p>Ollama is <strong>optional</strong>: ranking works without it. Configure it only if you want LLM-generated rationales for each recommended reviewer.</p>
+    </details>
+  </header>
+
+  <main>
+    <section id="input-section">
+      <label class="field">Title
+        <input id="paperTitle" type="text" placeholder="Paper title">
+      </label>
+      <label class="field">Abstract
+        <textarea id="paperAbstract" rows="4" placeholder="Paper abstract"></textarea>
+      </label>
+
+      <div class="action-row">
+        <details class="controls-panel">
+          <summary>Scoring weights<span class="summary-preview" id="scoringPreview"></span></summary>
+          <div class="controls-grid">
+            <label class="feature-disabled">Recency half-life (years)
+              <input id="halfLife" type="number" min="0.5" step="0.5" value="5">
+              <span class="hint-inline">Paper N years old contributes 0.5^(N/half-life) of its similarity. Set very high to disable.</span>
+            </label>
+            <label>Author-position decay r
+              <input id="positionDecay" type="number" min="0" max="1" step="0.05" value="0.7">
+              <span class="hint-inline">Author at position k gets weight r^k. Set to 1 to disable.</span>
+            </label>
+            <label>Top-K papers aggregated
+              <input id="topKPapers" type="number" min="1" step="1" value="50">
+              <span class="hint-inline">How many top-scoring papers feed reviewer aggregation.</span>
+            </label>
+            <label>Top-N reviewers shown
+              <input id="topNReviewers" type="number" min="1" step="1" value="30">
+            </label>
+          </div>
+        </details>
+
+        <details class="controls-panel">
+          <summary>Filters<span class="summary-preview" id="filtersPreview"></span></summary>
+          <div class="controls-grid">
+            <label>Year from
+              <input id="yearMin" type="number" step="1">
+            </label>
+            <label>Year to
+              <input id="yearMax" type="number" step="1">
+            </label>
+            <div class="conferences-group">
+              <span class="filter-label">Conferences</span>
+              <div id="conferenceFilters"></div>
+            </div>
+          </div>
+        </details>
+
+        <button id="findReviewers" type="button" disabled>Find Reviewers</button>
+        <span id="findReviewersStatus" class="status"></span>
+      </div>
+    </section>
+
+    <section id="reviewers-section" hidden>
+      <h2>Recommended Reviewers</h2>
+      <p class="hint">Top reviewers, ranked by total weighted score across up to 5 matched papers.</p>
+      <div id="legend"></div>
+      <div id="reviewersList"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

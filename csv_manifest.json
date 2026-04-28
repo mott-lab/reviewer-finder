@@ -1,0 +1,136 @@
+{
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dim": 384,
+  "files": [
+    {
+      "csv": "ACM_proceedings_csv/CHI_2020_program.csv",
+      "embeddings": "embeddings/CHI_2020_program.embeddings.bin",
+      "count": 1380
+    },
+    {
+      "csv": "ACM_proceedings_csv/CHI_2021_program.csv",
+      "embeddings": "embeddings/CHI_2021_program.embeddings.bin",
+      "count": 1314
+    },
+    {
+      "csv": "ACM_proceedings_csv/CHI_2022_program.csv",
+      "embeddings": "embeddings/CHI_2022_program.embeddings.bin",
+      "count": 1195
+    },
+    {
+      "csv": "ACM_proceedings_csv/CHI_2023_program.csv",
+      "embeddings": "embeddings/CHI_2023_program.embeddings.bin",
+      "count": 1548
+    },
+    {
+      "csv": "ACM_proceedings_csv/CHI_2024_program.csv",
+      "embeddings": "embeddings/CHI_2024_program.embeddings.bin",
+      "count": 1756
+    },
+    {
+      "csv": "ACM_proceedings_csv/CHI_2025_program.csv",
+      "embeddings": "embeddings/CHI_2025_program.embeddings.bin",
+      "count": 2397
+    },
+    {
+      "csv": "ACM_proceedings_csv/CHI_2026_program.csv",
+      "embeddings": "embeddings/CHI_2026_program.embeddings.bin",
+      "count": 2780
+    },
+    {
+      "csv": "ACM_proceedings_csv/CUI_2023_program.csv",
+      "embeddings": "embeddings/CUI_2023_program.embeddings.bin",
+      "count": 57
+    },
+    {
+      "csv": "ACM_proceedings_csv/CUI_2024_program.csv",
+      "embeddings": "embeddings/CUI_2024_program.embeddings.bin",
+      "count": 63
+    },
+    {
+      "csv": "ACM_proceedings_csv/CUI_2025_program.csv",
+      "embeddings": "embeddings/CUI_2025_program.embeddings.bin",
+      "count": 80
+    },
+    {
+      "csv": "ACM_proceedings_csv/IUI_2021_program.csv",
+      "embeddings": "embeddings/IUI_2021_program.embeddings.bin",
+      "count": 65
+    },
+    {
+      "csv": "ACM_proceedings_csv/IUI_2022_program.csv",
+      "embeddings": "embeddings/IUI_2022_program.embeddings.bin",
+      "count": 119
+    },
+    {
+      "csv": "ACM_proceedings_csv/IUI_2024_program.csv",
+      "embeddings": "embeddings/IUI_2024_program.embeddings.bin",
+      "count": 109
+    },
+    {
+      "csv": "ACM_proceedings_csv/IUI_2025_program.csv",
+      "embeddings": "embeddings/IUI_2025_program.embeddings.bin",
+      "count": 149
+    },
+    {
+      "csv": "ACM_proceedings_csv/IUI_2026_program.csv",
+      "embeddings": "embeddings/IUI_2026_program.embeddings.bin",
+      "count": 212
+    },
+    {
+      "csv": "ACM_proceedings_csv/SUI_2024_program.csv",
+      "embeddings": "embeddings/SUI_2024_program.embeddings.bin",
+      "count": 78
+    },
+    {
+      "csv": "ACM_proceedings_csv/UIST_2020_program.csv",
+      "embeddings": "embeddings/UIST_2020_program.embeddings.bin",
+      "count": 158
+    },
+    {
+      "csv": "ACM_proceedings_csv/UIST_2021_program.csv",
+      "embeddings": "embeddings/UIST_2021_program.embeddings.bin",
+      "count": 216
+    },
+    {
+      "csv": "ACM_proceedings_csv/UIST_2022_program.csv",
+      "embeddings": "embeddings/UIST_2022_program.embeddings.bin",
+      "count": 245
+    },
+    {
+      "csv": "ACM_proceedings_csv/UIST_2023_program.csv",
+      "embeddings": "embeddings/UIST_2023_program.embeddings.bin",
+      "count": 269
+    },
+    {
+      "csv": "ACM_proceedings_csv/UIST_2024_program.csv",
+      "embeddings": "embeddings/UIST_2024_program.embeddings.bin",
+      "count": 307
+    },
+    {
+      "csv": "ACM_proceedings_csv/UIST_2025_program.csv",
+      "embeddings": "embeddings/UIST_2025_program.embeddings.bin",
+      "count": 436
+    },
+    {
+      "csv": "ACM_proceedings_csv/VRST_2020_program.csv",
+      "embeddings": "embeddings/VRST_2020_program.embeddings.bin",
+      "count": 78
+    },
+    {
+      "csv": "ACM_proceedings_csv/VRST_2021_program.csv",
+      "embeddings": "embeddings/VRST_2021_program.embeddings.bin",
+      "count": 111
+    },
+    {
+      "csv": "ACM_proceedings_csv/VRST_2022_program.csv",
+      "embeddings": "embeddings/VRST_2022_program.embeddings.bin",
+      "count": 86
+    },
+    {
+      "csv": "ACM_proceedings_csv/VRST_2024_program.csv",
+      "embeddings": "embeddings/VRST_2024_program.embeddings.bin",
+      "count": 104
+    }
+  ]
+}
