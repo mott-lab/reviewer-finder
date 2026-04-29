@@ -6,6 +6,7 @@ const CONTENT = {
       <p>It keeps the top-K best-matching papers and rolls them up into a per-author score. Authors at position 1 count more than later co-authors (controlled by the position-decay setting), and each author's total is the sum of their top 5 contributing papers.</p>
       <p>The right-hand <strong>Saved searches</strong> panel lets you keep selected reviewers across multiple queries and export everything as a single CSV for outreach tracking.</p>
       <p>Everything runs in your browser — no data leaves your machine.</p>
+      <p>Source code and issue tracker: <a href="https://github.com/mott-lab/reviewer-finder" target="_blank" rel="noopener noreferrer">github.com/mott-lab/reviewer-finder</a>.</p>
     `,
   },
   submission: {

@@ -60,6 +60,7 @@ body {
   column-gap: 1.5rem;
 }
 body > header { grid-column: 1 / -1; }
+body > footer { grid-column: 1 / -1; }
 body > main   { grid-column: 1; min-width: 0; }
 body > aside#saved-panel {
   grid-column: 2;
@@ -549,3 +550,21 @@ aside#saved-panel {
   font-size: 0.88em;
 }
 .help-modal-body li { margin-bottom: 0.25rem; }
+
+.site-footer {
+  margin-top: 1.5rem;
+  padding: 0.75rem 0 0.5rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.site-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+.site-footer a:hover { color: var(--fg); }
+.github-icon { vertical-align: middle; }
