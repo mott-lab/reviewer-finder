@@ -187,7 +187,7 @@ button:disabled { background: var(--muted); cursor: not-allowed; }
 .controls-panel[open] summary { margin-bottom: 0.5rem; }
 .controls-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.5rem 1rem;
 }
 .controls-grid > label {

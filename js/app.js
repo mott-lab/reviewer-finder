@@ -17,7 +17,7 @@ async function init() {
   $('testConnection').addEventListener('click', testConnection);
   $('findReviewers').addEventListener('click', findReviewers);
 
-  for (const id of ['positionDecay', 'topKPapers', 'topNReviewers', 'yearMin', 'yearMax']) {
+  for (const id of ['halfLife', 'positionDecay', 'topKPapers', 'topNReviewers', 'yearMin', 'yearMax']) {
     $(id).addEventListener('input', updatePreviews);
   }
   $('conferenceFilters').addEventListener('change', updatePreviews);
@@ -63,10 +63,12 @@ function setTheme(theme) {
 }
 
 function updatePreviews() {
+  const halfLife = $('halfLife').value;
   const positionDecay = $('positionDecay').value;
   const topK = $('topKPapers').value;
   const topN = $('topNReviewers').value;
-  $('scoringPreview').textContent = `pos-decay ${positionDecay} · top-K ${topK} · top-N ${topN}`;
+  $('scoringPreview').textContent =
+    `half-life ${halfLife}y · pos-decay ${positionDecay} · top-K ${topK} · top-N ${topN}`;
 
   const yearMin = $('yearMin').value;
   const yearMax = $('yearMax').value;
@@ -128,9 +130,7 @@ async function testConnection() {
 }
 
 function readControls() {
-  // Recency half-life weighting is currently disabled; force Infinity so
-  // recencyWeight() returns 1 and paper_score equals raw cosine similarity.
-  const halfLife = Infinity;
+  const halfLife = parseFloat($('halfLife').value);
   const positionDecay = parseFloat($('positionDecay').value);
   const topKPapers = parseInt($('topKPapers').value, 10);
   const topNReviewers = parseInt($('topNReviewers').value, 10);
