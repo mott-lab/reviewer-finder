@@ -13,6 +13,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# personal development planning files.
 PLANS.md
 CLAUDE.md
 ACCESSIBILITY.md
+TODO.md

@@ -21,7 +21,8 @@
   <header>
     <h1>Reviewer Finder</h1>
     <span id="dataStatus" role="status">Loading proceedings…</span>
-    <button id="themeToggle" type="button" class="theme-toggle" title="Toggle theme">Light</button>
+    <button type="button" class="how-it-works" data-help-key="overview" title="Read a short overview of what this app does">How it works</button>
+    <button id="themeToggle" type="button" class="theme-toggle" title="Toggle light/dark theme">Light</button>
 
     <div class="config feature-disabled">
       <label>Ollama URL <input id="ollamaUrl" type="text" value="http://localhost:11434"></label>
@@ -40,16 +41,20 @@
 
   <main id="main">
     <section id="input-section" aria-label="Submission">
+      <div class="field-heading">
+        <span>Submission</span>
+        <button type="button" class="help-icon" data-help-key="submission" title="What goes in these fields?" aria-label="Help: what goes in the submission fields">?</button>
+      </div>
       <label class="field">Title
-        <input id="paperTitle" type="text" placeholder="Paper title">
+        <input id="paperTitle" type="text" placeholder="Paper title" title="The title of the paper you want reviewers for.">
       </label>
       <label class="field">Abstract
-        <textarea id="paperAbstract" rows="4" placeholder="Paper abstract"></textarea>
+        <textarea id="paperAbstract" rows="4" placeholder="Paper abstract" title="More text gives a better ranking signal. Stays in your browser."></textarea>
       </label>
 
       <div class="action-row">
         <details class="controls-panel">
-          <summary>Scoring weights<span class="summary-preview" id="scoringPreview"></span></summary>
+          <summary>Scoring weights<span class="summary-preview" id="scoringPreview"></span><button type="button" class="help-icon" data-help-key="scoring" title="How the scoring weights work" aria-label="Help: scoring weights">?</button></summary>
           <div class="controls-grid">
             <label>Recency half-life (years)
               <input id="halfLife" type="number" min="0.5" step="0.5" value="50">
@@ -70,13 +75,13 @@
         </details>
 
         <details class="controls-panel">
-          <summary>Filters<span class="summary-preview" id="filtersPreview"></span></summary>
+          <summary>Filters<span class="summary-preview" id="filtersPreview"></span><button type="button" class="help-icon" data-help-key="filters" title="What the filters do" aria-label="Help: filters">?</button></summary>
           <div class="controls-grid">
             <label>Year from
-              <input id="yearMin" type="number" step="1">
+              <input id="yearMin" type="number" step="1" title="Inclusive lower bound on paper year.">
             </label>
             <label>Year to
-              <input id="yearMax" type="number" step="1">
+              <input id="yearMax" type="number" step="1" title="Inclusive upper bound on paper year.">
             </label>
             <fieldset class="conferences-group">
               <legend class="filter-label">Conferences</legend>
@@ -85,18 +90,46 @@
           </div>
         </details>
 
-        <button id="findReviewers" type="button" disabled>Find Reviewers</button>
+        <button id="findReviewers" type="button" disabled title="Embed your text and rank candidate reviewers from the loaded corpus.">Find Reviewers</button>
         <span id="findReviewersStatus" class="status" role="status"></span>
       </div>
     </section>
 
     <section id="reviewers-section" hidden>
-      <h2 id="reviewersHeading" tabindex="-1">Recommended Reviewers</h2>
+      <h2 id="reviewersHeading" tabindex="-1">Recommended Reviewers<button type="button" class="help-icon" data-help-key="reviewers" title="How to read the reviewer cards" aria-label="Help: recommended reviewers">?</button></h2>
       <p class="hint">Top reviewers, ranked by total weighted score across up to 5 matched papers.</p>
+      <div class="save-bar">
+        <label class="inline-checkbox select-all-label" title="Toggle every reviewer's checkbox at once.">
+          <input id="selectAllReviewers" type="checkbox" checked>
+          <span>Select all</span>
+        </label>
+        <button id="saveSearch" type="button" title="Save the currently selected reviewers to the panel on the right, labeled with the current paper title.">Save this search</button>
+        <span id="saveStatus" class="status" role="status"></span>
+      </div>
       <div id="legend"></div>
       <div id="reviewersList"></div>
     </section>
   </main>
+
+  <aside id="saved-panel" aria-label="Saved searches">
+    <div class="saved-panel-header">
+      <h2>Saved searches<button type="button" class="help-icon" data-help-key="saved" title="How saving and exporting works" aria-label="Help: saving and exporting">?</button></h2>
+      <button id="exportSaved" type="button" disabled title="Download all saved searches as a CSV (one row per search × reviewer).">Export CSV</button>
+    </div>
+    <div id="savedList" class="saved-list">
+      <p class="saved-empty">No searches saved yet.</p>
+    </div>
+  </aside>
+
+  <dialog id="helpModal" class="help-modal" aria-labelledby="helpModalTitle">
+    <article class="help-modal-content">
+      <header class="help-modal-header">
+        <h2 id="helpModalTitle"></h2>
+        <button type="button" class="help-modal-close" aria-label="Close help">×</button>
+      </header>
+      <div id="helpModalBody" class="help-modal-body"></div>
+    </article>
+  </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script type="module" src="./js/app.js"></script>

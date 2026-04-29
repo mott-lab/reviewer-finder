@@ -75,6 +75,27 @@ A static, client-side web app lives at the project root (`index.html`, `styles.c
 
 Paste a paper title and abstract, then click **Find Reviewers**. The app ranks each paper by cosine similarity to the query (optionally tilted toward newer papers via a recency half-life), takes the top-K, and aggregates author scores with a position-decay weight (first author > second > third …), capped at each reviewer's top 5 matched papers. The **Scoring weights** panel lets you tune the recency half-life, position decay, top-K, and top-N. The **Filters** panel lets you restrict by year range or conference. A theme toggle in the header switches between light and dark modes.
 
+### In-app help
+
+Click **How it works** in the header for a short overview, or click the small **?** icon next to any major section (Scoring weights, Filters, Recommended Reviewers, Saved searches) for contextual help. Most controls also have hover tooltips.
+
+### Saving & exporting reviewer lists
+
+The right-hand **Saved searches** panel lets you build up a working list of reviewers across multiple queries and export it as a single CSV — useful when you're staffing reviewers for several of your own papers in one sitting.
+
+After running **Find Reviewers**, every recommended reviewer card has a checkbox (default: checked). Untick anyone you don't want, then click **Save this search** — the panel records your selection labeled with the current paper title. Run another search with a different title/abstract and save again to accumulate reviewers across all the papers you're trying to staff. The **Select all** checkbox at the top of the results toggles every reviewer at once.
+
+Click **Export CSV** to download a single spreadsheet with one row per (saved search × selected reviewer):
+
+| column | meaning |
+| --- | --- |
+| `search_title` | the paper title from the input field at save time |
+| `reviewer_name` | author name |
+| `reviewer_total` | total weighted score for that reviewer in that search |
+| `email`, `contacted`, `response` | left blank — for you to fill in to track outreach |
+
+Saved searches persist in your browser's `localStorage` under the key `reviewerFinder.savedSearches`, so they survive a page refresh. Use the **×** on a saved row to remove it. Nothing is sent anywhere; the saved list is your local working spreadsheet.
+
 ### Running locally
 
 ES modules and `fetch` require an HTTP origin, so serve over a local server:

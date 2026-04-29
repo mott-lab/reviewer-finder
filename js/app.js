@@ -1,26 +1,38 @@
 import { loadAllPapers } from './data.js';
 import { embed, cosine } from './embed.js';
 import { listModels, chat } from './ollama.js';
+import { loadSaved, persist, makeId, toCsv, triggerDownload, todayStamp } from './saved.js';
+import { initHelp } from './help.js';
 
 const PER_REVIEWER_PAPER_CAP = 5;
 
 const state = {
   papers: [],
   embeddingModel: null,
+  saved: [],
+  lastReviewers: [],
+  storageWarning: '',
 };
 
 const $ = (id) => document.getElementById(id);
 
 async function init() {
   initThemeToggle();
+  initHelp();
 
   $('testConnection').addEventListener('click', testConnection);
   $('findReviewers').addEventListener('click', findReviewers);
+  $('selectAllReviewers').addEventListener('change', onSelectAllChange);
+  $('saveSearch').addEventListener('click', onSaveSearch);
+  $('exportSaved').addEventListener('click', onExportClick);
 
   for (const id of ['halfLife', 'positionDecay', 'topKPapers', 'topNReviewers', 'yearMin', 'yearMax']) {
     $(id).addEventListener('input', updatePreviews);
   }
   $('conferenceFilters').addEventListener('change', updatePreviews);
+
+  state.saved = loadSaved();
+  renderSavedPanel();
 
   try {
     const { papers, model } = await loadAllPapers();
@@ -254,6 +266,12 @@ async function findReviewers() {
 function renderReviewers(reviewers) {
   const list = $('reviewersList');
   list.innerHTML = '';
+  state.lastReviewers = reviewers;
+  $('saveStatus').textContent = '';
+  $('saveStatus').className = 'status';
+  const selectAll = $('selectAllReviewers');
+  selectAll.checked = true;
+  selectAll.indeterminate = false;
 
   // Globally normalize wt and sim across all displayed papers so cell colors
   // are comparable across reviewer cards.
@@ -276,8 +294,17 @@ function renderReviewers(reviewers) {
 
   reviewers.forEach((r, i) => {
     const card = document.createElement('div');
-    card.className = 'reviewer-card';
+    card.className = 'reviewer-card has-checkbox';
     card.id = `reviewer-${i}`;
+
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'reviewer-select';
+    cb.checked = true;
+    cb.dataset.reviewerIndex = String(i);
+    cb.setAttribute('aria-label', `Include ${r.name} when saving this search`);
+    cb.addEventListener('change', onCardCheckboxChange);
+    card.appendChild(cb);
 
     const heading = document.createElement('h3');
     heading.innerHTML = `${escapeHtml(r.name)} <span class="score">total weighted score: ${r.total.toFixed(2)}</span>`;
@@ -410,6 +437,149 @@ async function generateRationales(reviewers, queryText, baseUrl, model, statusEl
       statusEl.textContent = `LLM error: ${err.message}. Skipping remaining rationales.`;
       return;
     }
+  }
+}
+
+function onSelectAllChange(e) {
+  const checked = e.target.checked;
+  for (const cb of document.querySelectorAll('#reviewersList .reviewer-select')) {
+    cb.checked = checked;
+  }
+  e.target.indeterminate = false;
+}
+
+function onCardCheckboxChange() {
+  const all = document.querySelectorAll('#reviewersList .reviewer-select');
+  const checked = document.querySelectorAll('#reviewersList .reviewer-select:checked');
+  const master = $('selectAllReviewers');
+  if (checked.length === 0) {
+    master.checked = false;
+    master.indeterminate = false;
+  } else if (checked.length === all.length) {
+    master.checked = true;
+    master.indeterminate = false;
+  } else {
+    master.checked = false;
+    master.indeterminate = true;
+  }
+}
+
+function getSelectedReviewerIndices() {
+  return [...document.querySelectorAll('#reviewersList .reviewer-select:checked')]
+    .map((cb) => parseInt(cb.dataset.reviewerIndex, 10))
+    .filter((n) => Number.isInteger(n));
+}
+
+function onSaveSearch() {
+  const status = $('saveStatus');
+  status.className = 'status';
+  status.textContent = '';
+
+  const title = $('paperTitle').value.trim();
+  if (!title) {
+    status.className = 'status connection-err';
+    status.textContent = 'Enter a paper title to label this search.';
+    return;
+  }
+
+  if (!state.lastReviewers || state.lastReviewers.length === 0) {
+    status.className = 'status connection-err';
+    status.textContent = 'Run a search first.';
+    return;
+  }
+
+  const selectedIdx = new Set(getSelectedReviewerIndices());
+  if (selectedIdx.size === 0) {
+    status.className = 'status connection-err';
+    status.textContent = 'Select at least one reviewer.';
+    return;
+  }
+
+  const reviewers = state.lastReviewers
+    .filter((_, i) => selectedIdx.has(i))
+    .map((r) => ({
+      name: r.name,
+      total: r.total,
+      papers: r.papers.map((c) => ({
+        title: c.paper['paper title'] || '',
+        year: c.paper['year'] || '',
+        conference: c.paper['conference'] || '',
+        doi: c.paper['DOI'] || '',
+        sim: c.sim,
+        contribution: c.contribution,
+        position: c.position,
+      })),
+    }));
+
+  const entry = {
+    id: makeId(),
+    title,
+    savedAt: new Date().toISOString(),
+    reviewers,
+  };
+  state.saved.push(entry);
+
+  const result = persist(state.saved);
+  if (!result.ok) {
+    state.storageWarning = `Couldn't save to localStorage: ${result.error}. Kept in memory only.`;
+  } else {
+    state.storageWarning = '';
+  }
+
+  renderSavedPanel();
+  status.className = 'status connection-ok';
+  status.textContent = `Saved "${title}" with ${reviewers.length} reviewer${reviewers.length === 1 ? '' : 's'}.`;
+}
+
+function onDeleteSaved(id) {
+  const entry = state.saved.find((e) => e.id === id);
+  if (!entry) return;
+  if (!confirm(`Delete saved search "${entry.title}"?`)) return;
+  state.saved = state.saved.filter((e) => e.id !== id);
+  const result = persist(state.saved);
+  state.storageWarning = result.ok ? '' : `Couldn't update localStorage: ${result.error}.`;
+  renderSavedPanel();
+}
+
+function onExportClick() {
+  if (state.saved.length === 0) return;
+  const csv = toCsv(state.saved);
+  triggerDownload(csv, `reviewer-finder-${todayStamp()}.csv`);
+}
+
+function renderSavedPanel() {
+  const list = $('savedList');
+  $('exportSaved').disabled = state.saved.length === 0;
+
+  if (state.saved.length === 0) {
+    list.innerHTML = '<p class="saved-empty">No searches saved yet.</p>';
+    if (state.storageWarning) {
+      list.innerHTML += `<p class="saved-warning">${escapeHtml(state.storageWarning)}</p>`;
+    }
+    return;
+  }
+
+  const rows = state.saved.map((entry) => {
+    const date = (entry.savedAt || '').slice(0, 10);
+    const count = entry.reviewers.length;
+    return (
+      `<div class="saved-entry">` +
+        `<div class="saved-meta">` +
+          `<div class="saved-title">${escapeHtml(entry.title)}</div>` +
+          `<div class="saved-sub">${count} reviewer${count === 1 ? '' : 's'} · ${escapeHtml(date)}</div>` +
+        `</div>` +
+        `<button type="button" class="saved-delete" data-saved-id="${escapeAttr(entry.id)}" aria-label="Delete saved search ${escapeAttr(entry.title)}">×</button>` +
+      `</div>`
+    );
+  }).join('');
+
+  const warn = state.storageWarning
+    ? `<p class="saved-warning">${escapeHtml(state.storageWarning)}</p>`
+    : '';
+  list.innerHTML = rows + warn;
+
+  for (const btn of list.querySelectorAll('.saved-delete')) {
+    btn.addEventListener('click', () => onDeleteSaved(btn.dataset.savedId));
   }
 }
 
