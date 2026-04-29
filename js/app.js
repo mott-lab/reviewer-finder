@@ -40,17 +40,26 @@ async function init() {
 function initThemeToggle() {
   const btn = $('themeToggle');
   const current = document.documentElement.dataset.theme || 'light';
-  btn.textContent = current === 'dark' ? 'Dark' : 'Light';
+  updateThemeButton(current);
   btn.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
   });
 }
 
+function updateThemeButton(theme) {
+  const btn = $('themeToggle');
+  btn.textContent = theme === 'dark' ? 'Dark' : 'Light';
+  btn.setAttribute(
+    'aria-label',
+    theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+  );
+}
+
 function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem('theme', theme);
-  $('themeToggle').textContent = theme === 'dark' ? 'Dark' : 'Light';
+  updateThemeButton(theme);
 }
 
 function updatePreviews() {
@@ -220,7 +229,12 @@ async function findReviewers() {
 
     renderReviewers(reviewers);
     $('reviewers-section').hidden = false;
-    $('reviewers-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $('reviewers-section').scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'start',
+    });
+    $('reviewersHeading').focus({ preventScroll: true });
     statusEl.textContent = `Ranked ${filtered.length} papers · top ${topPapers.length} fed reviewer aggregation.`;
 
     const ollamaUrl = $('ollamaUrl').value.trim().replace(/\/$/, '');
@@ -253,10 +267,12 @@ function renderReviewers(reviewers) {
   renderLegend(wtLo, wtHi, simLo, simHi);
 
   const headerHtml =
-    '<span class="paper-th">title</span>' +
-    '<span class="paper-th paper-th-r">wt</span>' +
-    '<span class="paper-th paper-th-r">sim</span>' +
-    '<span class="paper-th">venue</span>';
+    '<thead><tr>' +
+      '<th scope="col">title</th>' +
+      '<th scope="col" class="paper-th-r">wt</th>' +
+      '<th scope="col" class="paper-th-r">sim</th>' +
+      '<th scope="col">venue</th>' +
+    '</tr></thead>';
 
   reviewers.forEach((r, i) => {
     const card = document.createElement('div');
@@ -267,7 +283,7 @@ function renderReviewers(reviewers) {
     heading.innerHTML = `${escapeHtml(r.name)} <span class="score">total weighted score: ${r.total.toFixed(2)}</span>`;
     card.appendChild(heading);
 
-    const table = document.createElement('div');
+    const table = document.createElement('table');
     table.className = 'paper-table';
 
     const rowsHtml = r.papers.map((c) => {
@@ -275,19 +291,21 @@ function renderReviewers(reviewers) {
       const doi = c.paper['DOI'];
       const venue = `${c.paper['conference']} ${c.paper['year']}`;
       const titleEl = doi
-        ? `<a class="paper-title" href="${escapeAttr(doi)}" target="_blank" rel="noopener">${escapeHtml(title)}</a>`
+        ? `<a class="paper-title" href="${escapeAttr(doi)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeAttr(title)} (opens in new tab)">${escapeHtml(title)}</a>`
         : `<span class="paper-title">${escapeHtml(title)}</span>`;
       const wtT = norm(c.contribution, wtLo, wtHi);
       const simT = norm(c.sim, simLo, simHi);
       return (
-        titleEl +
-        `<span class="paper-num" style="background:${viridisCss(wtT)};color:${textOnViridis(wtT)}">${c.contribution.toFixed(2)}</span>` +
-        `<span class="paper-num" style="background:${viridisCss(simT)};color:${textOnViridis(simT)}">${c.sim.toFixed(2)}</span>` +
-        `<span class="paper-venue">${escapeHtml(venue)}</span>`
+        '<tr>' +
+        `<td>${titleEl}</td>` +
+        `<td class="paper-num" style="background:${viridisCss(wtT)};color:${textOnViridis(wtT)}">${c.contribution.toFixed(2)}</td>` +
+        `<td class="paper-num" style="background:${viridisCss(simT)};color:${textOnViridis(simT)}">${c.sim.toFixed(2)}</td>` +
+        `<td class="paper-venue">${escapeHtml(venue)}</td>` +
+        '</tr>'
       );
     }).join('');
 
-    table.innerHTML = headerHtml + rowsHtml;
+    table.innerHTML = headerHtml + '<tbody>' + rowsHtml + '</tbody>';
     card.appendChild(table);
 
     const rationale = document.createElement('div');
@@ -334,7 +352,7 @@ const VIRIDIS_STOPS = [
   [122, 209, 81], [189, 222, 38], [253, 231, 37],
 ];
 
-function viridisCss(t) {
+function viridisRgb(t) {
   // Clamp to [0.2, 1.0] so even the lowest-scoring cells stay visible
   // against dark-mode card backgrounds (#111827).
   if (!Number.isFinite(t)) t = 0;
@@ -344,17 +362,26 @@ function viridisCss(t) {
   const f = idx - i;
   const a = VIRIDIS_STOPS[i];
   const b = VIRIDIS_STOPS[i + 1];
-  const r = Math.round(a[0] + (b[0] - a[0]) * f);
-  const g = Math.round(a[1] + (b[1] - a[1]) * f);
-  const bl = Math.round(a[2] + (b[2] - a[2]) * f);
-  return `rgb(${r},${g},${bl})`;
+  return [
+    Math.round(a[0] + (b[0] - a[0]) * f),
+    Math.round(a[1] + (b[1] - a[1]) * f),
+    Math.round(a[2] + (b[2] - a[2]) * f),
+  ];
+}
+
+function viridisCss(t) {
+  const [r, g, b] = viridisRgb(t);
+  return `rgb(${r},${g},${b})`;
 }
 
 function textOnViridis(t) {
-  // Above ~0.6, viridis turns green-yellow-bright; black text reads better.
-  // Below, dark purple-blue dominates; white text reads better.
-  const clamped = 0.2 + 0.8 * Math.max(0, Math.min(1, Number.isFinite(t) ? t : 0));
-  return clamped > 0.6 ? '#000' : '#fff';
+  const [r, g, b] = viridisRgb(t);
+  const lin = (c) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  const Y = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  return Y > 0.179 ? '#000' : '#fff';
 }
 
 async function generateRationales(reviewers, queryText, baseUrl, model, statusEl) {

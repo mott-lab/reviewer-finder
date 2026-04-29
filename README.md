@@ -101,5 +101,3 @@ To re-enable: remove `feature-disabled` from the half-life `<label>` in `index.h
 ## TODO
 
 - do an accessibility audit and identify accessibility issues.
-- set default top-k papers aggregated to 100
-- right-align the total weighted score in author card

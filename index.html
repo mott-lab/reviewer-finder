@@ -17,16 +17,17 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
   <header>
     <h1>Reviewer Finder</h1>
-    <span id="dataStatus">Loading proceedings…</span>
+    <span id="dataStatus" role="status">Loading proceedings…</span>
     <button id="themeToggle" type="button" class="theme-toggle" title="Toggle theme">Light</button>
 
     <div class="config feature-disabled">
       <label>Ollama URL <input id="ollamaUrl" type="text" value="http://localhost:11434"></label>
       <label>Model <input id="ollamaModel" type="text" placeholder="e.g. llama3"></label>
       <button id="testConnection" type="button">Test connection</button>
-      <span id="connectionStatus"></span>
+      <span id="connectionStatus" role="status"></span>
     </div>
     <details class="help feature-disabled">
       <summary>Ollama setup help</summary>
@@ -37,8 +38,8 @@
     </details>
   </header>
 
-  <main>
-    <section id="input-section">
+  <main id="main">
+    <section id="input-section" aria-label="Submission">
       <label class="field">Title
         <input id="paperTitle" type="text" placeholder="Paper title">
       </label>
@@ -59,7 +60,7 @@
               <span class="hint-inline">Author at position k gets weight r^k. Set to 1 to disable.</span>
             </label>
             <label>Top-K papers aggregated
-              <input id="topKPapers" type="number" min="1" step="1" value="50">
+              <input id="topKPapers" type="number" min="1" step="1" value="100">
               <span class="hint-inline">How many top-scoring papers feed reviewer aggregation.</span>
             </label>
             <label>Top-N reviewers shown
@@ -77,20 +78,20 @@
             <label>Year to
               <input id="yearMax" type="number" step="1">
             </label>
-            <div class="conferences-group">
-              <span class="filter-label">Conferences</span>
+            <fieldset class="conferences-group">
+              <legend class="filter-label">Conferences</legend>
               <div id="conferenceFilters"></div>
-            </div>
+            </fieldset>
           </div>
         </details>
 
         <button id="findReviewers" type="button" disabled>Find Reviewers</button>
-        <span id="findReviewersStatus" class="status"></span>
+        <span id="findReviewersStatus" class="status" role="status"></span>
       </div>
     </section>
 
     <section id="reviewers-section" hidden>
-      <h2>Recommended Reviewers</h2>
+      <h2 id="reviewersHeading" tabindex="-1">Recommended Reviewers</h2>
       <p class="hint">Top reviewers, ranked by total weighted score across up to 5 matched papers.</p>
       <div id="legend"></div>
       <div id="reviewersList"></div>
