@@ -53,6 +53,36 @@
       "count": 80
     },
     {
+      "csv": "ACM_proceedings_csv/IEEE_VR_2021.csv",
+      "embeddings": "embeddings/IEEE_VR_2021.embeddings.bin",
+      "count": 127
+    },
+    {
+      "csv": "ACM_proceedings_csv/IEEE_VR_2022.csv",
+      "embeddings": "embeddings/IEEE_VR_2022.embeddings.bin",
+      "count": 132
+    },
+    {
+      "csv": "ACM_proceedings_csv/IEEE_VR_2023.csv",
+      "embeddings": "embeddings/IEEE_VR_2023.embeddings.bin",
+      "count": 140
+    },
+    {
+      "csv": "ACM_proceedings_csv/IEEE_VR_2024.csv",
+      "embeddings": "embeddings/IEEE_VR_2024.embeddings.bin",
+      "count": 194
+    },
+    {
+      "csv": "ACM_proceedings_csv/IEEE_VR_2025.csv",
+      "embeddings": "embeddings/IEEE_VR_2025.embeddings.bin",
+      "count": 223
+    },
+    {
+      "csv": "ACM_proceedings_csv/IEEE_VR_2026.csv",
+      "embeddings": "embeddings/IEEE_VR_2026.embeddings.bin",
+      "count": 247
+    },
+    {
       "csv": "ACM_proceedings_csv/IUI_2021_program.csv",
       "embeddings": "embeddings/IUI_2021_program.embeddings.bin",
       "count": 65

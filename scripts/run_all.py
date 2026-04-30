@@ -15,6 +15,7 @@ from pathlib import Path
 
 STEPS = [
     "scripts/process_acm_json.py",
+    "scripts/process_ieee_html.py",
     "scripts/dedup_csvs.py",
     "scripts/embed_papers.py",
 ]
