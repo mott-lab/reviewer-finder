@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Reviewer Finder</title>
+  <link rel="icon" type="image/x-icon" href="icons/noun-search-information-4116560-FFFFFF.ico">
   <script>
     (function () {
       var stored = localStorage.getItem('theme');
@@ -19,7 +20,10 @@
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
   <header>
-    <h1>Reviewer Finder</h1>
+    <div class="site-title">
+      <img class="site-logo" src="icons/noun-search-information-4116560-FFFFFF.ico" alt="" aria-hidden="true">
+      <h1>Reviewer Finder</h1>
+    </div>
     <span id="dataStatus" role="status">Loading proceedings…</span>
     <button type="button" class="how-it-works" data-help-key="overview" title="Read a short overview of what this app does">How it works</button>
     <button id="themeToggle" type="button" class="theme-toggle" title="Toggle light/dark theme">Light</button>

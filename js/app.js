@@ -307,7 +307,9 @@ function renderReviewers(reviewers) {
     card.appendChild(cb);
 
     const heading = document.createElement('h3');
-    heading.innerHTML = `${escapeHtml(r.name)} <span class="score">total weighted score: ${r.total.toFixed(2)}</span>`;
+    const scholarUrl = `https://scholar.google.com/citations?hl=en&view_op=search_authors&mauthors=${encodeURIComponent(r.name).replace(/%20/g, '+')}`;
+    const scholarIcon = `<svg class="scholar-icon" aria-hidden="true" viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>`;
+    heading.innerHTML = `<span class="reviewer-name">${escapeHtml(r.name)}<a class="scholar-link" href="${scholarUrl}" target="_blank" rel="noopener noreferrer" aria-label="Search ${escapeHtml(r.name)} on Google Scholar" title="Search on Google Scholar">${scholarIcon}</a></span><span class="score">total weighted score: ${r.total.toFixed(2)}</span>`;
     card.appendChild(heading);
 
     const table = document.createElement('table');

@@ -85,6 +85,20 @@ h1 {
   font-size: 1.4rem;
   font-family: "Ubuntu Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
+
+.site-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.site-logo {
+  height: 2.5rem;
+  width: auto;
+  max-height: 2.5rem;
+  flex-shrink: 0;
+  /* filter: brightness(0); */
+}
+
 h2 { margin: 0 0 0.5rem; font-size: 1.1rem; }
 h3 { margin: 0 0 0.4rem; font-size: 1rem; }
 
@@ -194,6 +208,15 @@ button:disabled { background: var(--muted); cursor: not-allowed; }
 .status { margin-left: 0.75rem; color: var(--muted); font-size: 0.9rem; }
 
 .score { color: var(--muted); font-size: 0.85rem; }
+
+.scholar-link {
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 0.25em;
+  vertical-align: text-bottom;
+  display: inline-flex;
+}
+.scholar-link:hover { color: var(--primary); }
 
 .controls-panel {
   border: 1px solid var(--border);
