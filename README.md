@@ -1,5 +1,7 @@
 # Reviewer Finder
 
+Live site: https://mott-lab.github.io/reviewer-finder/ 
+
 A static, client-side web app that recommends peer reviewers for an academic submission. Paste a paper title and abstract; the app ranks authors of past conference papers by semantic similarity to your submission. Useful when you're trying to find who has published in the same space as a paper you're considering.
 
 The whole stack runs in the browser. Paper embeddings are computed offline with `sentence-transformers/all-MiniLM-L6-v2` and shipped as binary sidecars; the browser only embeds your query (via Transformers.js) and scores it against the corpus. No server, no API keys, no build step — the repo is designed to be served as-is from GitHub Pages.
