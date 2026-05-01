@@ -72,8 +72,9 @@
               <input id="topKPapers" type="number" min="1" step="1" value="100">
               <span class="hint-inline">How many top-scoring papers feed reviewer aggregation.</span>
             </label>
-            <label>Top-N reviewers shown
-              <input id="topNReviewers" type="number" min="1" step="1" value="30">
+            <label>Top papers per reviewer
+              <input id="topPapersPerReviewer" type="number" min="1" step="1" value="5">
+              <span class="hint-inline">Max papers that count toward each reviewer's total score.</span>
             </label>
           </div>
         </details>
@@ -81,6 +82,9 @@
         <details class="controls-panel">
           <summary>Filters<span class="summary-preview" id="filtersPreview"></span><button type="button" class="help-icon" data-help-key="filters" title="What the filters do" aria-label="Help: filters">?</button></summary>
           <div class="controls-grid">
+            <label>Top-N reviewers shown
+              <input id="topNReviewers" type="number" min="1" step="1" value="30">
+            </label>
             <label>Year from
               <input id="yearMin" type="number" step="1" title="Inclusive lower bound on paper year.">
             </label>
@@ -101,7 +105,7 @@
 
     <section id="reviewers-section" hidden>
       <h2 id="reviewersHeading" tabindex="-1">Recommended Reviewers<button type="button" class="help-icon" data-help-key="reviewers" title="How to read the reviewer cards" aria-label="Help: recommended reviewers">?</button></h2>
-      <p class="hint">Top reviewers, ranked by total weighted score across up to 5 matched papers.</p>
+      <p class="hint">Top reviewers, ranked by total weighted score across their top-contributing papers.</p>
       <div class="save-bar">
         <label class="inline-checkbox select-all-label" title="Toggle every reviewer's checkbox at once.">
           <input id="selectAllReviewers" type="checkbox" checked>

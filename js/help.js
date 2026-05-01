@@ -3,7 +3,7 @@ const CONTENT = {
     title: 'How Reviewer Finder works',
     html: `
       <p>Paste a paper title and abstract — yours, or a paper representative of the topic you want reviewers for — and click <strong>Find Reviewers</strong>. The app embeds your text using a small language model running in your browser, then ranks every paper in the loaded corpus by cosine similarity to that text.</p>
-      <p>It keeps the top-K best-matching papers and rolls them up into a per-author score. Authors at position 1 count more than later co-authors (controlled by the position-decay setting), and each author's total is the sum of their top 5 contributing papers.</p>
+      <p>It keeps the top-K best-matching papers and rolls them up into a per-author score. Authors at position 1 count more than later co-authors (controlled by the position-decay setting), and each author's total is the sum of their top-N contributing papers (configurable in Scoring Weights).</p>
       <p>The right-hand <strong>Saved searches</strong> panel lets you keep selected reviewers across multiple queries and export everything as a single CSV for outreach tracking.</p>
       <p>Everything runs in your browser — no data leaves your machine.</p>
       <p>Source code and issue tracker: <a href="https://github.com/mott-lab/reviewer-finder" target="_blank" rel="noopener noreferrer">github.com/mott-lab/reviewer-finder</a>.</p>
@@ -19,12 +19,12 @@ const CONTENT = {
   scoring: {
     title: 'Scoring weights',
     html: `
-      <p>Each paper's score is <code>cosine(query, paper) × recency(year)</code>. Each author's contribution from a paper is <code>paper_score × r^position</code>, where position 0 is the first author. A reviewer's total is the sum of their top 5 contributions.</p>
+      <p>Each paper's score is <code>cosine(query, paper) × recency(year)</code>. Each author's contribution from a paper is <code>paper_score × r^position</code>, where position 0 is the first author. A reviewer's total is the sum of their top-N contributions (set via <strong>Top papers per reviewer</strong> in Scoring Weights).</p>
       <ul>
         <li><strong>Recency half-life (years)</strong> — a paper N years old contributes <code>0.5^(N/half-life)</code> of its similarity. Default 50 leaves recency mostly off; lower it (e.g. 5–10) to favor active researchers.</li>
         <li><strong>Author-position decay r</strong> — author at position k gets weight <code>r^k</code>. With r = 0.7, second author counts 70%, third 49%. Set to 1 to weight all authors equally.</li>
         <li><strong>Top-K papers aggregated</strong> — only the K best-matching papers feed reviewer aggregation. Smaller K = sharper recommendations from a tighter pool.</li>
-        <li><strong>Top-N reviewers shown</strong> — caps how many reviewers appear in the results.</li>
+        <li><strong>Top papers per reviewer</strong> — max papers counted toward each reviewer's total. Lower values (e.g. 3) prevent prolific authors from dominating; higher values (e.g. 10) give credit for breadth.</li>
       </ul>
     `,
   },
@@ -33,6 +33,7 @@ const CONTENT = {
     html: `
       <p>Filters apply <em>before</em> the top-K cut, so they directly shape which papers can contribute to reviewer scores.</p>
       <ul>
+        <li><strong>Top-N reviewers shown</strong> — caps how many reviewer cards appear in the results.</li>
         <li><strong>Year range</strong> — inclusive bounds. Useful if you only want recent work.</li>
         <li><strong>Conferences</strong> — scope to specific venues. By default every loaded venue is checked.</li>
       </ul>
@@ -41,7 +42,7 @@ const CONTENT = {
   reviewers: {
     title: 'Recommended reviewers',
     html: `
-      <p>Each card shows up to 5 of the reviewer's papers that contributed to their score. Columns:</p>
+      <p>Each card shows the reviewer's top-contributing papers (capped by <strong>Top papers per reviewer</strong> in Scoring Weights). Columns:</p>
       <ul>
         <li><strong>wt</strong> — that paper's weighted contribution (similarity × recency × position decay).</li>
         <li><strong>sim</strong> — raw cosine similarity (0–1) between your submission and the paper.</li>

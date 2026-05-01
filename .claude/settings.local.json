@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\SREAL\\\\mattg\\\\research\\\\projects\\\\01_tools\\\\reviewer_finder\" -Recurse -Filter \"*.js\" -Force)",
+      "Bash(Select-Object FullName)"
+    ]
+  }
+}

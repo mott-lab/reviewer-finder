@@ -4,7 +4,6 @@ import { listModels, chat } from './ollama.js';
 import { loadSaved, persist, makeId, toCsv, triggerDownload, todayStamp } from './saved.js';
 import { initHelp } from './help.js';
 
-const PER_REVIEWER_PAPER_CAP = 5;
 
 const state = {
   papers: [],
@@ -26,7 +25,7 @@ async function init() {
   $('saveSearch').addEventListener('click', onSaveSearch);
   $('exportSaved').addEventListener('click', onExportClick);
 
-  for (const id of ['halfLife', 'positionDecay', 'topKPapers', 'topNReviewers', 'yearMin', 'yearMax']) {
+  for (const id of ['halfLife', 'positionDecay', 'topKPapers', 'topPapersPerReviewer', 'topNReviewers', 'yearMin', 'yearMax']) {
     $(id).addEventListener('input', updatePreviews);
   }
   $('conferenceFilters').addEventListener('change', updatePreviews);
@@ -78,10 +77,11 @@ function updatePreviews() {
   const halfLife = $('halfLife').value;
   const positionDecay = $('positionDecay').value;
   const topK = $('topKPapers').value;
-  const topN = $('topNReviewers').value;
+  const cap = $('topPapersPerReviewer').value;
   $('scoringPreview').textContent =
-    `half-life ${halfLife}y · pos-decay ${positionDecay} · top-K ${topK} · top-N ${topN}`;
+    `half-life ${halfLife}y · pos-decay ${positionDecay} · top-K ${topK} · cap ${cap}`;
 
+  const topN = $('topNReviewers').value;
   const yearMin = $('yearMin').value;
   const yearMax = $('yearMax').value;
   const all = document.querySelectorAll('#conferenceFilters input');
@@ -93,7 +93,8 @@ function updatePreviews() {
       : sel.length === all.length
       ? `${all.length} conferences`
       : `${sel.length}/${all.length} conferences`;
-  $('filtersPreview').textContent = confPart ? `${yearPart} · ${confPart}` : yearPart;
+  const filterParts = [`top-N ${topN}`, yearPart, confPart].filter(Boolean);
+  $('filtersPreview').textContent = filterParts.join(' · ');
 }
 
 function populateFilters(papers) {
@@ -145,6 +146,7 @@ function readControls() {
   const halfLife = parseFloat($('halfLife').value);
   const positionDecay = parseFloat($('positionDecay').value);
   const topKPapers = parseInt($('topKPapers').value, 10);
+  const topPapersPerReviewer = parseInt($('topPapersPerReviewer').value, 10);
   const topNReviewers = parseInt($('topNReviewers').value, 10);
   const yearMin = parseInt($('yearMin').value, 10);
   const yearMax = parseInt($('yearMax').value, 10);
@@ -153,7 +155,7 @@ function readControls() {
       (c) => c.dataset.conference
     )
   );
-  return { halfLife, positionDecay, topKPapers, topNReviewers, yearMin, yearMax, conferences };
+  return { halfLife, positionDecay, topKPapers, topPapersPerReviewer, topNReviewers, yearMin, yearMax, conferences };
 }
 
 function recencyWeight(year, currentYear, halfLife) {
@@ -232,7 +234,7 @@ async function findReviewers() {
     const reviewers = [...authorMap.values()]
       .map((r) => {
         const sorted = r.contributions.sort((a, b) => b.contribution - a.contribution);
-        const top = sorted.slice(0, PER_REVIEWER_PAPER_CAP);
+        const top = sorted.slice(0, ctrl.topPapersPerReviewer);
         const total = top.reduce((s, c) => s + c.contribution, 0);
         return { name: r.name, total, papers: top };
       })
