@@ -74,6 +74,7 @@ body > aside#saved-panel {
 @media (max-width: 900px) {
   body { grid-template-columns: 1fr; }
   body > aside#saved-panel {
+    grid-column: 1;
     position: static;
     max-height: none;
     overflow: visible;
